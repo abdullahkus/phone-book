@@ -18,7 +18,7 @@ const App = () => {
                 Here you can list the phone book.
             </Typography>
             <Typography variant="body1" onClick={() => navigate('/users')}>
-                Here you can list the users.
+                Here you can list the users. If you are not an admin, you cannot access.
             </Typography>
         </>
     );

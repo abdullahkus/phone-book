@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DirectoryRepository extends JpaRepository<Directory, Long> {
-    List<Directory> findAll();
+    List<Directory> findAllByUserId(Long id);
     Optional<Directory> findById(Long id);
     void deleteById(Long id);
     Directory save(DirectoryRequest request);

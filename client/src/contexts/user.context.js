@@ -13,13 +13,13 @@ export const UserContext = createContext({
 });
 
 export const UserProvider = ({ children }) => {
+    const [jwtToken, setJwtToken] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
         const getUser = async () => {
-            const localJwtToken = await getLocalStorage('access-token');
-            if (localJwtToken) {
-                const userEmail = jwtDecode(localJwtToken).sub;
+            if (jwtToken) {
+                const userEmail = jwtDecode(jwtToken).sub;
                 const user = await userService
                     .getUser(userEmail)
                     .then((response) => response.data);
@@ -28,7 +28,7 @@ export const UserProvider = ({ children }) => {
         };
 
         getUser();
-    }, []);
+    }, [jwtToken]);
 
     useEffect(() => {
         if (currentUser?.enabled === false) {
@@ -37,7 +37,7 @@ export const UserProvider = ({ children }) => {
         }
     }, [currentUser?.enabled]);
 
-    const value = { currentUser, setCurrentUser };
+    const value = { currentUser, setCurrentUser, setJwtToken };
 
     return (
         <UserContext.Provider value={value}>{children}</UserContext.Provider>

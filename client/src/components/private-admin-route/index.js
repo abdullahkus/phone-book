@@ -7,7 +7,7 @@ const PrivateAdminRoute = ({ component: Component }) => {
 
     return (
         <>
-            {currentUser && currentUser?.role !== 'USER_ADMIN' ? (
+            {currentUser && !currentUser.disabled &&currentUser?.role === 'ROLE_ADMIN' ? (
                 <Component />
             ) : (
                 <Navigate to="/" />

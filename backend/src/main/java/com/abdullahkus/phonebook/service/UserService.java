@@ -20,14 +20,14 @@ public class UserService {
     private  final PasswordEncoder passwordEncoder;
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return users.stream().map(UserResponse::new).collect(Collectors.toList());
+        return users.stream().map(user -> new UserResponse(user.getId(), user.getFirstname(), user.getLastname(), user.getEmail(), user.isEnabled(), user.getRole())).collect(Collectors.toList());
     }
 
     public UserResponse getUserByEmail(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
-            User user =  optionalUser.get();
-            return new UserResponse(user);
+            User user = optionalUser.get();
+            return new UserResponse(user.getId(), user.getFirstname(), user.getLastname(), user.getEmail(), user.isEnabled(), user.getRole());
         }
         return null;
     }
@@ -50,7 +50,7 @@ public class UserService {
                 .enabled(true)
                 .build();
         user = userRepository.save(user);
-        return new UserResponse(user);
+        return new UserResponse(user.getId(), user.getFirstname(), user.getLastname(), user.getEmail(), user.isEnabled(), user.getRole());
     }
 
     public void deleteUser(Long id){
@@ -64,11 +64,13 @@ public class UserService {
             user.setFirstname(request.getFirstname());
             user.setLastname(request.getLastname());
             user.setEmail(request.getEmail());
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            if (!request.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
+            }
             user.setRole(request.getRole());
             user.setEnabled(request.isEnabled());
             user = userRepository.save(user);
-            return new UserResponse(user);
+            return new UserResponse(user.getId(), user.getFirstname(), user.getLastname(), user.getEmail(), user.isEnabled(), user.getRole());
         }
         return null;
     }

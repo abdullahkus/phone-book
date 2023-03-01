@@ -25,20 +25,20 @@ const UserEditModal = ({ open, handleClose, setUsers, selectedUser }) => {
         reset,
     } = useForm();
 
-    const { currentUser, setCurrentUser } = useContext(UserContext);
+    const { setCurrentUser } = useContext(UserContext);
 
     useEffect(() => {
         reset(selectedUser);
     }, [reset, selectedUser]);
 
     const onSubmit = async (data) => {
+        console.log(data);
+        console.log(selectedUser);
         const response = await userService
             .update(selectedUser.id, data)
             .then((response) => response.data);
 
-        if (selectedUser.id === currentUser.id) {
-            setCurrentUser(response);
-        }
+        setCurrentUser(response);
 
         setUsers((currentUser) => {
             const updatedUsers = currentUser.map((user) =>
@@ -142,20 +142,16 @@ const UserEditModal = ({ open, handleClose, setUsers, selectedUser }) => {
                             }
                         />
                         <TextField
-                            name="password"
                             label="Password"
-                            type="password"
+                            type="text"
                             variant="outlined"
                             {...register('password', {
-                                required: true,
                                 minLength: 8,
                             })}
-                            error={!!errors?.password}
+                            error={!!errors?.phoneNumber}
                             helperText={
-                                (errors?.password?.type === 'required' &&
-                                    'Password is required') ||
-                                (errors?.password?.type === 'minLength' &&
-                                    'Password must be at least 8 characters')
+                                errors?.password?.type === 'minLength' &&
+                                'Password must be at least 8 characters'
                             }
                         />
                         <FormControl fullWidth>
@@ -163,7 +159,7 @@ const UserEditModal = ({ open, handleClose, setUsers, selectedUser }) => {
                             <Select
                                 labelId="role-label"
                                 name="role"
-                                defaultValue="ROLE_USER"
+                                defaultValue={selectedUser?.role || ''}
                                 {...register('role', { required: true })}
                                 error={!!errors?.role}
                             >

@@ -19,14 +19,14 @@ public class DirectoryController {
     private final DirectoryService directoryService;
 
     @GetMapping
-    public ResponseEntity<List<DirectoryResponse>> getAllDirectories() {
-        List<DirectoryResponse> directories = directoryService.getAllDirectories();
+    public ResponseEntity<List<DirectoryResponse>> getAllDirectories(HttpServletRequest httpServletRequest) {
+        List<DirectoryResponse> directories = directoryService.getAllDirectories(httpServletRequest);
         return ResponseEntity.ok(directories);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DirectoryResponse> getDirectoryById(@PathVariable Long id) {
-        DirectoryResponse directory = directoryService.getDirectoryById(id);
+    public ResponseEntity<DirectoryResponse> getDirectoryById(@PathVariable Long id, HttpServletRequest httpServletRequest) {
+        DirectoryResponse directory = directoryService.getDirectoryById(id, httpServletRequest);
         if (directory == null) {
             return ResponseEntity.notFound().build();
         }
@@ -40,8 +40,8 @@ public class DirectoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DirectoryResponse> updateDirectory(@PathVariable Long id, @RequestBody DirectoryRequest request) {
-        DirectoryResponse directory = directoryService.updateDirectory(id, request);
+    public ResponseEntity<DirectoryResponse> updateDirectory(@PathVariable Long id, @RequestBody DirectoryRequest request, HttpServletRequest httpServletRequest) {
+        DirectoryResponse directory = directoryService.updateDirectory(id, request, httpServletRequest);
         if (directory == null) {
             return ResponseEntity.notFound().build();
         }
@@ -49,8 +49,8 @@ public class DirectoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDirectory(@PathVariable Long id) {
-        directoryService.deleteDirectory(id);
+    public ResponseEntity<Void> deleteDirectory(@PathVariable Long id, HttpServletRequest httpServletRequest) {
+        directoryService.deleteDirectory(id, httpServletRequest);
         return ResponseEntity.noContent().build();
     }
 }

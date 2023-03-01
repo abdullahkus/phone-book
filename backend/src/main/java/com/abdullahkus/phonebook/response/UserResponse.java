@@ -16,7 +16,6 @@ public class UserResponse {
     private String firstname;
     private String lastname;
     private String email;
-    private String password;
     private boolean enabled;
     private Role role;
 
@@ -25,7 +24,6 @@ public class UserResponse {
         this.firstname = user.getFirstname();
         this.lastname = user.getLastname();
         this.email = user.getEmail();
-        this.password = user.getPassword();
         this.role = user.getRole();
         this.enabled = user.isEnabled();
     }

@@ -21,16 +21,40 @@ public class DirectoryService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
-    public List<DirectoryResponse> getAllDirectories() {
-        List<Directory> directories = directoryRepository.findAll();
+    public List<DirectoryResponse> getAllDirectories(HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+        String jwt = token.substring(7);
+
+        String email = jwtService.extractUsername(jwt);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        List<Directory> directories = directoryRepository.findAllByUserId(user.getId());
         return directories.stream().map(DirectoryResponse::new).collect(Collectors.toList());
     }
 
-    public DirectoryResponse getDirectoryById(Long id) {
+    public DirectoryResponse getDirectoryById(Long id, HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+        String jwt = token.substring(7);
+
+        String email = jwtService.extractUsername(jwt);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         Optional<Directory> directoryOptional = directoryRepository.findById(id);
         if (directoryOptional.isPresent()) {
             Directory directory = directoryOptional.get();
-            return new DirectoryResponse(directory);
+            if (directory.getUser().getId().equals(user.getId())) {
+                return new DirectoryResponse(directory);
+            } else {
+                throw new IllegalArgumentException("Directory not found");
+            }
         }
         return null;
     }
@@ -56,20 +80,52 @@ public class DirectoryService {
         return new DirectoryResponse(directory);
     }
 
-    public void deleteDirectory(Long id) {
-        directoryRepository.deleteById(id);
-    }
+    public DirectoryResponse updateDirectory(Long id, DirectoryRequest request, HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+        String jwt = token.substring(7);
 
-    public DirectoryResponse updateDirectory(Long id, DirectoryRequest request) {
+        String email = jwtService.extractUsername(jwt);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         Optional<Directory> directoryOptional = directoryRepository.findById(id);
         if (directoryOptional.isPresent()) {
             Directory directory = directoryOptional.get();
-            directory.setFirstname(request.getFirstname());
-            directory.setLastname(request.getLastname());
-            directory.setPhoneNumber(request.getPhoneNumber());
-            directory = directoryRepository.save(directory);
-            return new DirectoryResponse(directory);
+            if (directory.getUser().getId().equals(user.getId())) {
+                directory.setFirstname(request.getFirstname());
+                directory.setLastname(request.getLastname());
+                directory.setPhoneNumber(request.getPhoneNumber());
+                directory = directoryRepository.save(directory);
+                return new DirectoryResponse(directory);
+            } else {
+                throw new IllegalArgumentException("Directory not found");
+            }
         }
         return null;
+    }
+
+    public void deleteDirectory(Long id, HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+        String jwt = token.substring(7);
+
+        String email = jwtService.extractUsername(jwt);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Optional<Directory> directoryOptional = directoryRepository.findById(id);
+        if (directoryOptional.isPresent()) {
+            Directory directory = directoryOptional.get();
+            if (directory.getUser().getId().equals(user.getId())) {
+                directoryRepository.deleteById(id);
+            } else {
+                throw new IllegalArgumentException("Directory not found");
+            }
+        }
     }
 }

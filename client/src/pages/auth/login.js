@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+import { UserContext } from '../../contexts/user.context';
 import { useNavigate } from 'react-router-dom';
 
 import * as authServices from '../../services/auth.service';
@@ -12,6 +13,7 @@ import { setLocalStorage } from '../../utils/local-storage.utils';
 
 const Login = () => {
     const navigate = useNavigate();
+    const { setJwtToken } = useContext(UserContext);
     const {
         register,
         handleSubmit,
@@ -24,6 +26,7 @@ const Login = () => {
             .then((response) => response.data);
 
         setLocalStorage('access-token', response.token);
+        setJwtToken(response.token);
 
         navigate('/');
     };
@@ -73,14 +76,11 @@ const Login = () => {
                             variant="outlined"
                             {...register('password', {
                                 required: true,
-                                minLength: 8,
                             })}
                             error={!!errors?.password}
                             helperText={
-                                (errors?.password?.type === 'required' &&
-                                    'Password is required') ||
-                                (errors?.password?.type === 'minLength' &&
-                                    'Password must be at least 8 characters')
+                                errors?.password?.type === 'required' &&
+                                'Password is required'
                             }
                         />
                         <Button
