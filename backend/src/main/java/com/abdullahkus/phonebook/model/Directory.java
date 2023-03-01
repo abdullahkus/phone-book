@@ -34,12 +34,8 @@ public class Directory {
     @NotBlank(message = "Phone number is mandatory")
     private String phoneNumber;
 
+    @NotNull(message = "User cannot be empty.")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-
-
-
-
-
 }

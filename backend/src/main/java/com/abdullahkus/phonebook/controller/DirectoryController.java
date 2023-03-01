@@ -4,6 +4,7 @@ package com.abdullahkus.phonebook.controller;
 import com.abdullahkus.phonebook.request.DirectoryRequest;
 import com.abdullahkus.phonebook.response.DirectoryResponse;
 import com.abdullahkus.phonebook.service.DirectoryService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000/", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1/directories")
 @RequiredArgsConstructor
@@ -34,14 +34,14 @@ public class DirectoryController {
     }
 
     @PostMapping
-    public ResponseEntity<DirectoryResponse> createDirectory(@RequestBody DirectoryRequest directoryRequest) {
-        DirectoryResponse directory = directoryService.createDirectory(directoryRequest);
+    public ResponseEntity<DirectoryResponse> createDirectory(@RequestBody DirectoryRequest request, HttpServletRequest httpServletRequest) {
+        DirectoryResponse directory = directoryService.createDirectory(request, httpServletRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(directory);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DirectoryResponse> updateDirectory(@PathVariable Long id, @RequestBody DirectoryRequest directoryRequest) {
-        DirectoryResponse directory = directoryService.updateDirectory(id, directoryRequest);
+    public ResponseEntity<DirectoryResponse> updateDirectory(@PathVariable Long id, @RequestBody DirectoryRequest request) {
+        DirectoryResponse directory = directoryService.updateDirectory(id, request);
         if (directory == null) {
             return ResponseEntity.notFound().build();
         }

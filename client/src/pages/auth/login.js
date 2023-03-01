@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -9,12 +9,9 @@ import { useNavigate } from 'react-router-dom';
 
 import * as authServices from '../../services/auth.service';
 import { setLocalStorage } from '../../utils/local-storage.utils';
-import { UserContext } from '../../contexts/user.context';
 
 const Login = () => {
-    const { setCurrentUser } = useContext(UserContext);
     const navigate = useNavigate();
-
     const {
         register,
         handleSubmit,
@@ -27,7 +24,6 @@ const Login = () => {
             .then((response) => response.data);
 
         setLocalStorage('access-token', response.token);
-        setCurrentUser(response.token, 'dene');
 
         navigate('/');
     };

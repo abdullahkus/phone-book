@@ -8,48 +8,47 @@ import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import * as directoryService from '../../services/directory.service';
-import DirectoryAddModal from '../../components/directory/directory-add-modal';
-import DirectoryEditModal from '../../components/directory/directory-edit-modal';
+import * as userService from '../../services/user.service';
 
-const DirectoryList = () => {
-    const [directories, setDirectories] = useState([]);
+import UserAddModal from '../../components/user/user-add-modal';
+import UserEditModal from '../../components/user/user-edit-modal';
+
+const UserList = () => {
+    const [users, setUsers] = useState([]);
     const [openAddModal, setOpenAddModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
-    const [selectedDirectory, setSelectedDirectory] = useState({});
+    const [selectedUser, setSelectedUser] = useState({});
 
     const handleAddModalOpen = () => setOpenAddModal(true);
     const handleAddModalClose = () => setOpenAddModal(false);
-    const handleEditModalOpen = (directory) => {
-        setSelectedDirectory({ ...directory });
+    const handleEditModalOpen = (user) => {
+        setSelectedUser({ ...user });
         setOpenEditModal(true);
     };
     const handleEditModalClose = () => {
-        setSelectedDirectory({});
+        setSelectedUser({});
         setOpenEditModal(false);
     };
 
     useEffect(() => {
-        const fetchDirectories = async () => {
-            const response = await directoryService
+        const fetchUsers = async () => {
+            const response = await userService
                 .getAll()
                 .then((response) => response.data);
 
-            setDirectories(response);
+            setUsers(response);
         };
 
-        fetchDirectories();
+        fetchUsers();
     }, []);
 
-    const deleteDirectory = async (directoryId) => {
-        await directoryService
-            .deleteById(directoryId)
-            .then((response) => response.data);
+    const deleteUser = async (userId) => {
+        await userService.deleteById(userId).then((response) => response.data);
 
-        const updatedDirectories = directories.filter(
-            (directory) => directory.id !== directoryId,
+        const updatedUser = users.filter(
+            (directory) => directory.id !== userId,
         );
-        setDirectories(updatedDirectories);
+        setUsers(updatedUser);
     };
 
     return (
@@ -62,7 +61,7 @@ const DirectoryList = () => {
                     sx={{ width: '100%' }}
                     onClick={() => handleAddModalOpen()}
                 >
-                    Add Directory
+                    Add User
                 </Button>
             </Box>
             <Grid
@@ -70,8 +69,8 @@ const DirectoryList = () => {
                 rowSpacing={1}
                 columnSpacing={{ xs: 1, sm: 2, md: 3 }}
             >
-                {directories.length !== 0 ? (
-                    directories.map((directory, idx) => (
+                {users.length !== 0 ? (
+                    users.map((user, idx) => (
                         <Grid xs={6} key={idx}>
                             <Paper>
                                 <Box
@@ -89,9 +88,13 @@ const DirectoryList = () => {
                                             padding: 2,
                                         }}
                                     >
-                                        <Typography variant="h5">{`${directory.firstname} ${directory.lastname}`}</Typography>
+                                        <Typography variant="h5">{`${user.firstname} ${user.lastname}`}</Typography>
+                                        <Typography variant="body1">
+                                            {user.email}
+                                        </Typography>
+
                                         <Typography variant="subtitle1">
-                                            {directory.phoneNumber}
+                                            {user.phoneNumber}
                                         </Typography>
                                     </Box>
                                     <Box sx={{ display: 'flex', gap: 1 }}>
@@ -99,15 +102,13 @@ const DirectoryList = () => {
                                             color="primary"
                                             sx={{ cursor: 'pointer' }}
                                             onClick={() =>
-                                                handleEditModalOpen(directory)
+                                                handleEditModalOpen(user)
                                             }
                                         />
                                         <DeleteIcon
                                             color="error"
                                             sx={{ cursor: 'pointer' }}
-                                            onClick={() =>
-                                                deleteDirectory(directory.id)
-                                            }
+                                            onClick={() => deleteUser(user.id)}
                                         />
                                     </Box>
                                 </Box>
@@ -120,19 +121,19 @@ const DirectoryList = () => {
                     </Typography>
                 )}
             </Grid>
-            <DirectoryAddModal
+            <UserAddModal
                 open={openAddModal}
                 handleClose={handleAddModalClose}
-                setDirectories={setDirectories}
+                setUsers={setUsers}
             />
-            <DirectoryEditModal
+            <UserEditModal
                 open={openEditModal}
                 handleClose={handleEditModalClose}
-                setDirectories={setDirectories}
-                selectedDirectory={selectedDirectory}
+                setUsers={setUsers}
+                selectedUser={selectedUser}
             />
         </>
     );
 };
 
-export default DirectoryList;
+export default UserList;

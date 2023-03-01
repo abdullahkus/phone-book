@@ -17,7 +17,6 @@ import org.springframework.util.StringUtils;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-
     private final UserRepository userRepository;
     private  final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -37,7 +36,9 @@ public class AuthenticationService {
                 .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                // TODO burası user olacak
+                .role(Role.ROLE_ADMIN)
+                .enabled(true)
                 .build();
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
@@ -65,4 +66,6 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
+
+
 }

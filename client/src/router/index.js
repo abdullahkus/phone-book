@@ -1,10 +1,12 @@
 import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../layouts/main-layout';
 import AuthLayout from '../layouts/auth-layout';
+import PrivateRoute from '../components/private-route';
+import PrivateAdminRoute from '../components/private-admin-route';
 import Login from '../pages/auth/login';
 import Register from '../pages/auth/register';
-import PrivateRoute from '../components/private-route';
 import PhoneBookList from '../pages/directory/directory-list';
+import UserList from '../pages/user/user-list';
 import App from '../App';
 
 const routes = createBrowserRouter([
@@ -39,6 +41,10 @@ const routes = createBrowserRouter([
                     {
                         path: '/directories',
                         element: <PrivateRoute component={PhoneBookList} />,
+                    },
+                    {
+                        path: '/users',
+                        element: <PrivateAdminRoute component={UserList} />,
                     },
                 ],
             },
